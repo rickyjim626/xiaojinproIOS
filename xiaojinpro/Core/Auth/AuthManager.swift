@@ -10,6 +10,8 @@ import AuthenticationServices
 import Combine
 
 // MARK: - User Model
+/// Note: No CodingKeys needed - uses automatic snake_case conversion
+/// Properties map: avatar_url → avatarUrl, subscription_tier → subscriptionTier, etc.
 struct User: Codable, Identifiable, Equatable {
     let id: String
     let email: String?
@@ -17,22 +19,34 @@ struct User: Codable, Identifiable, Equatable {
     let avatarUrl: String?
     let subscriptionTier: String?
     let createdAt: Date?
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case email
-        case name
-        case avatarUrl = "avatar_url"
-        case subscriptionTier = "subscription_tier"
-        case createdAt = "created_at"
-    }
+    let isAdmin: Bool?  // maps from is_admin
 
     var displayName: String {
         name ?? email ?? "User"
     }
 
-    var isAdmin: Bool {
-        subscriptionTier == "studio" || subscriptionTier == "admin"
+    var isAdminUser: Bool {
+        isAdmin == true || subscriptionTier == "studio" || subscriptionTier == "admin"
+    }
+
+    /// 是否为订阅用户 (creator_beta 或 studio)
+    var isCreator: Bool {
+        subscriptionTier == "creator_beta" || subscriptionTier == "studio"
+    }
+
+    /// 是否为免费用户
+    var isFree: Bool {
+        subscriptionTier == nil || subscriptionTier == "free"
+    }
+
+    /// 计划显示名称
+    var planDisplayName: String {
+        switch subscriptionTier {
+        case "creator_beta": return "Creator Beta"
+        case "studio": return "Studio"
+        case "admin": return "Admin"
+        default: return "Free"
+        }
     }
 
     static func == (lhs: User, rhs: User) -> Bool {
@@ -58,16 +72,11 @@ enum AuthState: Equatable {
 }
 
 // MARK: - Auth Credentials
+/// Note: No CodingKeys needed - uses automatic snake_case conversion
 struct AuthCredentials: Codable {
     let accessToken: String
     let refreshToken: String?
     let expiresAt: Date?
-
-    enum CodingKeys: String, CodingKey {
-        case accessToken = "access_token"
-        case refreshToken = "refresh_token"
-        case expiresAt = "expires_at"
-    }
 
     var isExpired: Bool {
         guard let expiresAt = expiresAt else { return false }
@@ -76,6 +85,58 @@ struct AuthCredentials: Codable {
 }
 
 // MARK: - Login Request/Response
+
+/// Request for POST /auth/email/token
+/// Note: No CodingKeys needed because APIClient uses .convertToSnakeCase for encoding
+struct LoginTokenRequest: Codable {
+    let email: String
+    let password: String
+    let clientId: String
+    let scope: String
+
+    init(email: String, password: String) {
+        self.email = email
+        self.password = password
+        self.clientId = "xiaojinpro-ios"
+        self.scope = "openid profile email offline_access"
+    }
+}
+
+/// Response from POST /auth/email/token
+/// Note: No CodingKeys needed because APIClient uses .convertFromSnakeCase
+struct TokenResponse: Codable {
+    let tokenType: String
+    let accessToken: String
+    let refreshToken: String?
+    let expiresIn: Int64
+    let user: TokenUserInfo
+}
+
+/// User info from token response
+/// Note: No CodingKeys needed because APIClient uses .convertFromSnakeCase
+struct TokenUserInfo: Codable {
+    let id: String
+    let email: String?
+    let name: String?
+    let picture: String?
+    let isAdmin: Bool
+    let plan: String?  // subscription_tier (nullable)
+
+    /// Convert to User model
+    func toUser() -> User {
+        User(
+            id: id,
+            email: email,
+            name: name,
+            avatarUrl: picture,
+            subscriptionTier: plan,
+            createdAt: nil,
+            isAdmin: isAdmin
+        )
+    }
+}
+
+/// Legacy login request (session-based)
 struct LoginRequest: Codable {
     let email: String
     let password: String
@@ -87,48 +148,30 @@ struct RegisterRequest: Codable {
     let name: String?
 }
 
+/// Note: No CodingKeys needed - uses automatic snake_case conversion
 struct AuthResponse: Codable {
     let accessToken: String
     let refreshToken: String?
     let expiresIn: Int?
     let user: User?
-
-    enum CodingKeys: String, CodingKey {
-        case accessToken = "access_token"
-        case refreshToken = "refresh_token"
-        case expiresIn = "expires_in"
-        case user
-    }
 }
 
 // MARK: - OAuth Token Request
+/// Note: No CodingKeys needed - uses automatic snake_case conversion
 struct OAuthTokenRequest: Codable {
     let grantType: String
     let code: String
     let redirectUri: String
     let provider: String
-
-    enum CodingKeys: String, CodingKey {
-        case grantType = "grant_type"
-        case code
-        case redirectUri = "redirect_uri"
-        case provider
-    }
 }
 
 // MARK: - Apple Sign In Request
+/// Note: No CodingKeys needed - uses automatic snake_case conversion
 struct AppleSignInRequest: Codable {
     let identityToken: String
     let authorizationCode: String?
     let email: String?
     let fullName: String?
-
-    enum CodingKeys: String, CodingKey {
-        case identityToken = "identity_token"
-        case authorizationCode = "authorization_code"
-        case email
-        case fullName = "full_name"
-    }
 }
 
 // MARK: - OAuth Presentation Context Provider
@@ -189,25 +232,23 @@ class AuthManager: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let request = LoginRequest(email: email, password: password)
-            let response: AuthResponse = try await APIClient.shared.post(.login, body: request)
+            // Use new /auth/email/token endpoint for JWT token exchange
+            let request = LoginTokenRequest(email: email, password: password)
+            let response: TokenResponse = try await APIClient.shared.post(.loginToken, body: request)
 
             let credentials = AuthCredentials(
                 accessToken: response.accessToken,
                 refreshToken: response.refreshToken,
-                expiresAt: response.expiresIn.map { Date().addingTimeInterval(TimeInterval($0)) }
+                expiresAt: Date().addingTimeInterval(TimeInterval(response.expiresIn))
             )
 
             saveCredentials(credentials)
 
-            // Fetch user info if not included in response
-            let user: User
-            if let responseUser = response.user {
-                user = responseUser
-            } else {
-                user = try await fetchCurrentUser()
-            }
+            // User info is included in token response
+            let user = response.user.toUser()
             state = .authenticated(user)
+
+            print("✅ 登录成功: \(user.email ?? "unknown"), plan: \(user.planDisplayName), isAdmin: \(user.isAdmin)")
 
         } catch let apiError as APIError {
             error = apiError.localizedDescription

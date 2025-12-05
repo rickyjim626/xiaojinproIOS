@@ -13,35 +13,28 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            // Chat Tab
-            ConversationsListView()
+            // AI Chat - 所有用户的主功能
+            AIChatHomeView()
                 .tabItem {
-                    Label("对话", systemImage: "bubble.left.and.bubble.right")
+                    Label("AI", systemImage: "sparkles")
                 }
                 .tag(0)
 
-            // Skills Tab
-            SkillsView()
-                .tabItem {
-                    Label("能力", systemImage: "wand.and.stars")
-                }
-                .tag(1)
-
-            // Admin Tab (only for admin users)
+            // Admin 用户可以访问控制台
             if authManager.currentUser?.isAdmin == true {
-                AdminView()
+                ConsoleView()
                     .tabItem {
-                        Label("管理", systemImage: "gearshape.2")
+                        Label("控制台", systemImage: "globe.asia.australia")
                     }
-                    .tag(2)
+                    .tag(1)
             }
 
-            // Settings Tab
+            // 设置
             SettingsView()
                 .tabItem {
                     Label("设置", systemImage: "gearshape")
                 }
-                .tag(authManager.currentUser?.isAdmin == true ? 3 : 2)
+                .tag(authManager.currentUser?.isAdmin == true ? 2 : 1)
         }
     }
 }

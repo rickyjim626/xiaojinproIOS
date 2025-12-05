@@ -7,6 +7,140 @@
 
 import SwiftUI
 
+// MARK: - Tasks List View
+struct TasksView: View {
+    @StateObject private var taskService = TaskService.shared
+    @State private var selectedTask: XJPTask?
+    @State private var filterStatus: TaskStatus?
+
+    var filteredTasks: [XJPTask] {
+        if let status = filterStatus {
+            return taskService.tasks.filter { $0.status == status }
+        }
+        return taskService.tasks
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if taskService.isLoading && taskService.tasks.isEmpty {
+                    LoadingView()
+                } else if taskService.tasks.isEmpty {
+                    EmptyStateView(
+                        icon: "checklist",
+                        title: "暂无任务",
+                        message: "执行技能后会产生异步任务"
+                    )
+                } else {
+                    tasksList
+                }
+            }
+            .navigationTitle("任务队列")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button {
+                            filterStatus = nil
+                        } label: {
+                            Label("全部", systemImage: filterStatus == nil ? "checkmark" : "")
+                        }
+
+                        ForEach([TaskStatus.pending, .running, .succeeded, .failed], id: \.self) { status in
+                            Button {
+                                filterStatus = status
+                            } label: {
+                                Label(status.displayName, systemImage: filterStatus == status ? "checkmark" : "")
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "line.3.horizontal.decrease.circle")
+                    }
+                }
+            }
+            .refreshable {
+                try? await taskService.fetchTasks()
+            }
+            .navigationDestination(item: $selectedTask) { task in
+                TaskDetailView(taskId: task.id)
+            }
+        }
+        .task {
+            try? await taskService.fetchTasks()
+        }
+    }
+
+    private var tasksList: some View {
+        List {
+            ForEach(filteredTasks) { task in
+                TaskRow(task: task)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selectedTask = task
+                    }
+            }
+        }
+        .listStyle(.insetGrouped)
+    }
+}
+
+// MARK: - Task Row
+struct TaskRow: View {
+    let task: XJPTask
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Status icon
+            ZStack {
+                Circle()
+                    .fill(statusColor.opacity(0.2))
+                    .frame(width: 44, height: 44)
+
+                if task.status == .running {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(0.8)
+                } else {
+                    Image(systemName: task.status.icon)
+                        .foregroundColor(statusColor)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(task.skillName)
+                    .font(.headline)
+                    .lineLimit(1)
+
+                HStack(spacing: 8) {
+                    Text(task.status.displayName)
+                        .font(.caption)
+                        .foregroundColor(statusColor)
+
+                    Text(task.createdAt.shortString)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
+    }
+
+    private var statusColor: Color {
+        switch task.status {
+        case .pending: return .gray
+        case .running: return .blue
+        case .succeeded: return .green
+        case .failed: return .red
+        case .cancelled: return .orange
+        }
+    }
+}
+
 // MARK: - Task Detail View
 struct TaskDetailView: View {
     let taskId: String

@@ -14,7 +14,8 @@ enum APIConfig {
 
     enum Endpoint {
         // Auth
-        case login
+        case login           // Legacy session-based login
+        case loginToken      // JWT token exchange (for native apps)
         case register
         case logout
         case refreshToken
@@ -46,6 +47,7 @@ enum APIConfig {
         var path: String {
             switch self {
             case .login: return "/auth/email/login"
+            case .loginToken: return "/auth/email/token"
             case .register: return "/auth/email/register"
             case .logout: return "/auth/logout"
             case .refreshToken: return "/oauth2/token"
@@ -70,7 +72,7 @@ enum APIConfig {
 
         var baseURL: String {
             switch self {
-            case .login, .register, .logout, .refreshToken, .appleSignIn, .userMe:
+            case .login, .loginToken, .register, .logout, .refreshToken, .appleSignIn, .userMe:
                 return APIConfig.authBaseURL
             default:
                 return APIConfig.apiBaseURL
@@ -270,6 +272,11 @@ class APIClient: ObservableObject {
         do {
             let (data, response) = try await session.data(for: request)
 
+            // Debug: print raw response
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("API Response: \(jsonString)")
+            }
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw APIError.invalidResponse
             }
@@ -279,9 +286,14 @@ class APIClient: ObservableObject {
                 do {
                     return try decoder.decode(T.self, from: data)
                 } catch {
+                    print("Decoding error: \(error)")
                     throw APIError.decodingError(error)
                 }
             case 401:
+                // Try to extract error message from response
+                if let errorResponse = try? decoder.decode(ErrorOnlyResponse.self, from: data) {
+                    throw APIError.httpError(statusCode: 401, message: errorResponse.message)
+                }
                 throw APIError.unauthorized
             case 429:
                 throw APIError.rateLimited
@@ -289,6 +301,10 @@ class APIClient: ObservableObject {
                 let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown server error"
                 throw APIError.serverError(errorMessage)
             default:
+                // Try to extract error message from response body
+                if let errorResponse = try? decoder.decode(ErrorOnlyResponse.self, from: data) {
+                    throw APIError.httpError(statusCode: httpResponse.statusCode, message: errorResponse.message)
+                }
                 let errorMessage = String(data: data, encoding: .utf8)
                 throw APIError.httpError(statusCode: httpResponse.statusCode, message: errorMessage)
             }
@@ -308,3 +324,9 @@ class APIClient: ObservableObject {
 
 // MARK: - Empty Response
 struct EmptyResponse: Decodable {}
+
+// MARK: - Error Only Response (for parsing error messages from API)
+struct ErrorOnlyResponse: Decodable {
+    let error: String?
+    let message: String
+}

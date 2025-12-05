@@ -81,20 +81,24 @@ struct LoginView: View {
                             }
                         }
                     } label: {
-                        if authManager.isLoading {
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                                .tint(.white)
-                        } else {
-                            Text(isSignUp ? "注册" : "登录")
+                        Group {
+                            if authManager.isLoading {
+                                ProgressView()
+                                    .progressViewStyle(.circular)
+                                    .tint(.white)
+                            } else {
+                                Text(isSignUp ? "注册" : "登录")
+                            }
                         }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+                    .buttonStyle(.plain)
                     .disabled(authManager.isLoading || !isFormValid)
+                    .opacity(authManager.isLoading || !isFormValid ? 0.6 : 1.0)
 
                     // Toggle sign up/sign in
                     Button {

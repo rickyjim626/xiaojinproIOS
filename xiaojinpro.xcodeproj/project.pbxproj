@@ -13,6 +13,14 @@
 		061377332EE2A98F002E9D4C /* xiaojinproTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377322EE2A98F002E9D4C /* xiaojinproTests.swift */; };
 		0613773D2EE2A98F002E9D4C /* xiaojinproUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613773C2EE2A98F002E9D4C /* xiaojinproUITests.swift */; };
 		0613773F2EE2A98F002E9D4C /* xiaojinproUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613773E2EE2A98F002E9D4C /* xiaojinproUITestsLaunchTests.swift */; };
+		061377A12EE30000002E9D4C /* AIChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377A02EE30000002E9D4C /* AIChat.swift */; };
+		061377A32EE30000002E9D4C /* AIModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377A22EE30000002E9D4C /* AIModel.swift */; };
+		061377A52EE30000002E9D4C /* AIRouterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377A42EE30000002E9D4C /* AIRouterService.swift */; };
+		061377A72EE30000002E9D4C /* AIConversationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377A62EE30000002E9D4C /* AIConversationService.swift */; };
+		061377A92EE30000002E9D4C /* AIChatStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377A82EE30000002E9D4C /* AIChatStore.swift */; };
+		061377AB2EE30000002E9D4C /* AIChatHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377AA2EE30000002E9D4C /* AIChatHomeView.swift */; };
+		061377AD2EE30000002E9D4C /* AIChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377AC2EE30000002E9D4C /* AIChatView.swift */; };
+		061377C02EE31000002E9D4C /* ConsoleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377BF2EE31000002E9D4C /* ConsoleView.swift */; };
 		061377702EE2C58B002E9D4C /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613774B2EE2C58B002E9D4C /* AuthManager.swift */; };
 		061377712EE2C58B002E9D4C /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613774D2EE2C58B002E9D4C /* APIClient.swift */; };
 		061377722EE2C58B002E9D4C /* SSEClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613774E2EE2C58B002E9D4C /* SSEClient.swift */; };
@@ -90,6 +98,14 @@
 		061377872EE2E000002E9D4C /* TasksView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
 		061377892EE2E000002E9D4C /* NetworkMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		0613778B2EE2E000002E9D4C /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		061377A02EE30000002E9D4C /* AIChat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIChat.swift; sourceTree = "<group>"; };
+		061377A22EE30000002E9D4C /* AIModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIModel.swift; sourceTree = "<group>"; };
+		061377A42EE30000002E9D4C /* AIRouterService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIRouterService.swift; sourceTree = "<group>"; };
+		061377A62EE30000002E9D4C /* AIConversationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIConversationService.swift; sourceTree = "<group>"; };
+		061377A82EE30000002E9D4C /* AIChatStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIChatStore.swift; sourceTree = "<group>"; };
+		061377AA2EE30000002E9D4C /* AIChatHomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIChatHomeView.swift; sourceTree = "<group>"; };
+		061377AC2EE30000002E9D4C /* AIChatView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIChatView.swift; sourceTree = "<group>"; };
+		061377BF2EE31000002E9D4C /* ConsoleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -312,14 +328,70 @@
 		061377692EE2C58B002E9D4C /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				061377B02EE30000002E9D4C /* AIChat */,
 				0613775F2EE2C58B002E9D4C /* Admin */,
 				061377612EE2C58B002E9D4C /* Auth */,
 				061377642EE2C58B002E9D4C /* Chat */,
+				061377C12EE31000002E9D4C /* Console */,
 				061377662EE2C58B002E9D4C /* Settings */,
 				061377682EE2C58B002E9D4C /* Skills */,
 				0613778C2EE2E000002E9D4C /* Tasks */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		061377C12EE31000002E9D4C /* Console */ = {
+			isa = PBXGroup;
+			children = (
+				061377BF2EE31000002E9D4C /* ConsoleView.swift */,
+			);
+			path = Console;
+			sourceTree = "<group>";
+		};
+		061377B02EE30000002E9D4C /* AIChat */ = {
+			isa = PBXGroup;
+			children = (
+				061377B12EE30000002E9D4C /* Models */,
+				061377B22EE30000002E9D4C /* Services */,
+				061377B32EE30000002E9D4C /* ViewModels */,
+				061377B42EE30000002E9D4C /* Views */,
+			);
+			path = AIChat;
+			sourceTree = "<group>";
+		};
+		061377B12EE30000002E9D4C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				061377A02EE30000002E9D4C /* AIChat.swift */,
+				061377A22EE30000002E9D4C /* AIModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		061377B22EE30000002E9D4C /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				061377A42EE30000002E9D4C /* AIRouterService.swift */,
+				061377A62EE30000002E9D4C /* AIConversationService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		061377B32EE30000002E9D4C /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				061377A82EE30000002E9D4C /* AIChatStore.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		061377B42EE30000002E9D4C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				061377AA2EE30000002E9D4C /* AIChatHomeView.swift */,
+				061377AC2EE30000002E9D4C /* AIChatView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		0613776B2EE2C58B002E9D4C /* Components */ = {
@@ -503,6 +575,14 @@
 				061377862EE2E000002E9D4C /* TasksView.swift in Sources */,
 				061377882EE2E000002E9D4C /* NetworkMonitor.swift in Sources */,
 				0613778A2EE2E000002E9D4C /* NotificationManager.swift in Sources */,
+				061377A12EE30000002E9D4C /* AIChat.swift in Sources */,
+				061377A32EE30000002E9D4C /* AIModel.swift in Sources */,
+				061377A52EE30000002E9D4C /* AIRouterService.swift in Sources */,
+				061377A72EE30000002E9D4C /* AIConversationService.swift in Sources */,
+				061377A92EE30000002E9D4C /* AIChatStore.swift in Sources */,
+				061377AB2EE30000002E9D4C /* AIChatHomeView.swift in Sources */,
+				061377AD2EE30000002E9D4C /* AIChatView.swift in Sources */,
+				061377C02EE31000002E9D4C /* ConsoleView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
