@@ -8,12 +8,35 @@
 
 /* Begin PBXBuildFile section */
 		061377222EE2A98E002E9D4C /* xiaojinproApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377212EE2A98E002E9D4C /* xiaojinproApp.swift */; };
-		061377242EE2A98E002E9D4C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377232EE2A98E002E9D4C /* ContentView.swift */; };
 		061377262EE2A98F002E9D4C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 061377252EE2A98F002E9D4C /* Assets.xcassets */; };
 		061377292EE2A98F002E9D4C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 061377282EE2A98F002E9D4C /* Preview Assets.xcassets */; };
 		061377332EE2A98F002E9D4C /* xiaojinproTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377322EE2A98F002E9D4C /* xiaojinproTests.swift */; };
 		0613773D2EE2A98F002E9D4C /* xiaojinproUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613773C2EE2A98F002E9D4C /* xiaojinproUITests.swift */; };
 		0613773F2EE2A98F002E9D4C /* xiaojinproUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613773E2EE2A98F002E9D4C /* xiaojinproUITestsLaunchTests.swift */; };
+		061377702EE2C58B002E9D4C /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613774B2EE2C58B002E9D4C /* AuthManager.swift */; };
+		061377712EE2C58B002E9D4C /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613774D2EE2C58B002E9D4C /* APIClient.swift */; };
+		061377722EE2C58B002E9D4C /* SSEClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613774E2EE2C58B002E9D4C /* SSEClient.swift */; };
+		061377732EE2C58B002E9D4C /* Conversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377522EE2C58B002E9D4C /* Conversation.swift */; };
+		061377742EE2C58B002E9D4C /* Skill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377532EE2C58B002E9D4C /* Skill.swift */; };
+		061377752EE2C58B002E9D4C /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377542EE2C58B002E9D4C /* Task.swift */; };
+		061377762EE2C58B002E9D4C /* ConversationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377562EE2C58B002E9D4C /* ConversationService.swift */; };
+		061377772EE2C58B002E9D4C /* SkillService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377572EE2C58B002E9D4C /* SkillService.swift */; };
+		061377782EE2C58B002E9D4C /* TaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377582EE2C58B002E9D4C /* TaskService.swift */; };
+		061377792EE2C58B002E9D4C /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613775B2EE2C58B002E9D4C /* MainTabView.swift */; };
+		0613777A2EE2C58B002E9D4C /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613775C2EE2C58B002E9D4C /* RootView.swift */; };
+		0613777B2EE2C58B002E9D4C /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613775E2EE2C58B002E9D4C /* AdminView.swift */; };
+		0613777C2EE2C58B002E9D4C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377602EE2C58B002E9D4C /* LoginView.swift */; };
+		0613777D2EE2C58B002E9D4C /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377622EE2C58B002E9D4C /* ChatView.swift */; };
+		0613777E2EE2C58B002E9D4C /* ConversationsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377632EE2C58B002E9D4C /* ConversationsListView.swift */; };
+		0613777F2EE2C58B002E9D4C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377652EE2C58B002E9D4C /* SettingsView.swift */; };
+		061377802EE2C58B002E9D4C /* SkillsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377672EE2C58B002E9D4C /* SkillsView.swift */; };
+		061377812EE2C58B002E9D4C /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613776A2EE2C58B002E9D4C /* LoadingView.swift */; };
+		061377822EE2C58B002E9D4C /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613776C2EE2C58B002E9D4C /* Date+Extensions.swift */; };
+		061377832EE2C58B002E9D4C /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613776D2EE2C58B002E9D4C /* View+Extensions.swift */; };
+		061377842EE2D000002E9D4C /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377852EE2D000002E9D4C /* LocalStorage.swift */; };
+		061377862EE2E000002E9D4C /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377872EE2E000002E9D4C /* TasksView.swift */; };
+		061377882EE2E000002E9D4C /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377892EE2E000002E9D4C /* NetworkMonitor.swift */; };
+		0613778A2EE2E000002E9D4C /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613778B2EE2E000002E9D4C /* NotificationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +59,6 @@
 /* Begin PBXFileReference section */
 		0613771E2EE2A98E002E9D4C /* xiaojinpro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = xiaojinpro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		061377212EE2A98E002E9D4C /* xiaojinproApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xiaojinproApp.swift; sourceTree = "<group>"; };
-		061377232EE2A98E002E9D4C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		061377252EE2A98F002E9D4C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		061377282EE2A98F002E9D4C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0613772E2EE2A98F002E9D4C /* xiaojinproTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = xiaojinproTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +66,30 @@
 		061377382EE2A98F002E9D4C /* xiaojinproUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = xiaojinproUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0613773C2EE2A98F002E9D4C /* xiaojinproUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xiaojinproUITests.swift; sourceTree = "<group>"; };
 		0613773E2EE2A98F002E9D4C /* xiaojinproUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xiaojinproUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		0613774B2EE2C58B002E9D4C /* AuthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		0613774D2EE2C58B002E9D4C /* APIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		0613774E2EE2C58B002E9D4C /* SSEClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSEClient.swift; sourceTree = "<group>"; };
+		061377522EE2C58B002E9D4C /* Conversation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Conversation.swift; sourceTree = "<group>"; };
+		061377532EE2C58B002E9D4C /* Skill.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Skill.swift; sourceTree = "<group>"; };
+		061377542EE2C58B002E9D4C /* Task.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		061377562EE2C58B002E9D4C /* ConversationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationService.swift; sourceTree = "<group>"; };
+		061377572EE2C58B002E9D4C /* SkillService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkillService.swift; sourceTree = "<group>"; };
+		061377582EE2C58B002E9D4C /* TaskService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TaskService.swift; sourceTree = "<group>"; };
+		0613775B2EE2C58B002E9D4C /* MainTabView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		0613775C2EE2C58B002E9D4C /* RootView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		0613775E2EE2C58B002E9D4C /* AdminView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
+		061377602EE2C58B002E9D4C /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		061377622EE2C58B002E9D4C /* ChatView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		061377632EE2C58B002E9D4C /* ConversationsListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationsListView.swift; sourceTree = "<group>"; };
+		061377652EE2C58B002E9D4C /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		061377672EE2C58B002E9D4C /* SkillsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SkillsView.swift; sourceTree = "<group>"; };
+		0613776A2EE2C58B002E9D4C /* LoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
+		0613776C2EE2C58B002E9D4C /* Date+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		0613776D2EE2C58B002E9D4C /* View+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
+		061377852EE2D000002E9D4C /* LocalStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalStorage.swift; sourceTree = "<group>"; };
+		061377872EE2E000002E9D4C /* TasksView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TasksView.swift; sourceTree = "<group>"; };
+		061377892EE2E000002E9D4C /* NetworkMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		0613778B2EE2E000002E9D4C /* NotificationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,8 +140,12 @@
 		061377202EE2A98E002E9D4C /* xiaojinpro */ = {
 			isa = PBXGroup;
 			children = (
+				0613775D2EE2C58B002E9D4C /* App */,
+				061377512EE2C58B002E9D4C /* Core */,
+				0613775A2EE2C58B002E9D4C /* Domain */,
+				061377692EE2C58B002E9D4C /* Features */,
+				0613776F2EE2C58B002E9D4C /* Shared */,
 				061377212EE2A98E002E9D4C /* xiaojinproApp.swift */,
-				061377232EE2A98E002E9D4C /* ContentView.swift */,
 				061377252EE2A98F002E9D4C /* Assets.xcassets */,
 				061377272EE2A98F002E9D4C /* Preview Content */,
 			);
@@ -125,6 +175,177 @@
 				0613773E2EE2A98F002E9D4C /* xiaojinproUITestsLaunchTests.swift */,
 			);
 			path = xiaojinproUITests;
+			sourceTree = "<group>";
+		};
+		0613774C2EE2C58B002E9D4C /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				0613774B2EE2C58B002E9D4C /* AuthManager.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		0613774F2EE2C58B002E9D4C /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				0613774D2EE2C58B002E9D4C /* APIClient.swift */,
+				061377892EE2E000002E9D4C /* NetworkMonitor.swift */,
+				0613774E2EE2C58B002E9D4C /* SSEClient.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		061377502EE2C58B002E9D4C /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				061377852EE2D000002E9D4C /* LocalStorage.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		0613778D2EE2E000002E9D4C /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				0613778B2EE2E000002E9D4C /* NotificationManager.swift */,
+			);
+			path = Notification;
+			sourceTree = "<group>";
+		};
+		061377512EE2C58B002E9D4C /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				0613774C2EE2C58B002E9D4C /* Auth */,
+				0613774F2EE2C58B002E9D4C /* Network */,
+				0613778D2EE2E000002E9D4C /* Notification */,
+				061377502EE2C58B002E9D4C /* Storage */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		061377552EE2C58B002E9D4C /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				061377522EE2C58B002E9D4C /* Conversation.swift */,
+				061377532EE2C58B002E9D4C /* Skill.swift */,
+				061377542EE2C58B002E9D4C /* Task.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		061377592EE2C58B002E9D4C /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				061377562EE2C58B002E9D4C /* ConversationService.swift */,
+				061377572EE2C58B002E9D4C /* SkillService.swift */,
+				061377582EE2C58B002E9D4C /* TaskService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		0613775A2EE2C58B002E9D4C /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				061377552EE2C58B002E9D4C /* Models */,
+				061377592EE2C58B002E9D4C /* Services */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		0613775D2EE2C58B002E9D4C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				0613775B2EE2C58B002E9D4C /* MainTabView.swift */,
+				0613775C2EE2C58B002E9D4C /* RootView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		0613775F2EE2C58B002E9D4C /* Admin */ = {
+			isa = PBXGroup;
+			children = (
+				0613775E2EE2C58B002E9D4C /* AdminView.swift */,
+			);
+			path = Admin;
+			sourceTree = "<group>";
+		};
+		061377612EE2C58B002E9D4C /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				061377602EE2C58B002E9D4C /* LoginView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		061377642EE2C58B002E9D4C /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				061377622EE2C58B002E9D4C /* ChatView.swift */,
+				061377632EE2C58B002E9D4C /* ConversationsListView.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		061377662EE2C58B002E9D4C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				061377652EE2C58B002E9D4C /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		061377682EE2C58B002E9D4C /* Skills */ = {
+			isa = PBXGroup;
+			children = (
+				061377672EE2C58B002E9D4C /* SkillsView.swift */,
+			);
+			path = Skills;
+			sourceTree = "<group>";
+		};
+		0613778C2EE2E000002E9D4C /* Tasks */ = {
+			isa = PBXGroup;
+			children = (
+				061377872EE2E000002E9D4C /* TasksView.swift */,
+			);
+			path = Tasks;
+			sourceTree = "<group>";
+		};
+		061377692EE2C58B002E9D4C /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				0613775F2EE2C58B002E9D4C /* Admin */,
+				061377612EE2C58B002E9D4C /* Auth */,
+				061377642EE2C58B002E9D4C /* Chat */,
+				061377662EE2C58B002E9D4C /* Settings */,
+				061377682EE2C58B002E9D4C /* Skills */,
+				0613778C2EE2E000002E9D4C /* Tasks */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		0613776B2EE2C58B002E9D4C /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				0613776A2EE2C58B002E9D4C /* LoadingView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		0613776E2EE2C58B002E9D4C /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				0613776C2EE2C58B002E9D4C /* Date+Extensions.swift */,
+				0613776D2EE2C58B002E9D4C /* View+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		0613776F2EE2C58B002E9D4C /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				0613776B2EE2C58B002E9D4C /* Components */,
+				0613776E2EE2C58B002E9D4C /* Extensions */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,8 +478,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				061377242EE2A98E002E9D4C /* ContentView.swift in Sources */,
+				061377782EE2C58B002E9D4C /* TaskService.swift in Sources */,
+				061377752EE2C58B002E9D4C /* Task.swift in Sources */,
+				061377832EE2C58B002E9D4C /* View+Extensions.swift in Sources */,
+				061377822EE2C58B002E9D4C /* Date+Extensions.swift in Sources */,
+				061377742EE2C58B002E9D4C /* Skill.swift in Sources */,
+				0613777F2EE2C58B002E9D4C /* SettingsView.swift in Sources */,
+				0613777C2EE2C58B002E9D4C /* LoginView.swift in Sources */,
+				0613777D2EE2C58B002E9D4C /* ChatView.swift in Sources */,
+				061377732EE2C58B002E9D4C /* Conversation.swift in Sources */,
+				061377772EE2C58B002E9D4C /* SkillService.swift in Sources */,
+				061377702EE2C58B002E9D4C /* AuthManager.swift in Sources */,
+				061377762EE2C58B002E9D4C /* ConversationService.swift in Sources */,
+				0613777B2EE2C58B002E9D4C /* AdminView.swift in Sources */,
+				061377722EE2C58B002E9D4C /* SSEClient.swift in Sources */,
+				061377812EE2C58B002E9D4C /* LoadingView.swift in Sources */,
+				0613777E2EE2C58B002E9D4C /* ConversationsListView.swift in Sources */,
+				0613777A2EE2C58B002E9D4C /* RootView.swift in Sources */,
 				061377222EE2A98E002E9D4C /* xiaojinproApp.swift in Sources */,
+				061377712EE2C58B002E9D4C /* APIClient.swift in Sources */,
+				061377792EE2C58B002E9D4C /* MainTabView.swift in Sources */,
+				061377802EE2C58B002E9D4C /* SkillsView.swift in Sources */,
+				061377842EE2D000002E9D4C /* LocalStorage.swift in Sources */,
+				061377862EE2E000002E9D4C /* TasksView.swift in Sources */,
+				061377882EE2E000002E9D4C /* NetworkMonitor.swift in Sources */,
+				0613778A2EE2E000002E9D4C /* NotificationManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
