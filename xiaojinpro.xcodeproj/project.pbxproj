@@ -45,6 +45,7 @@
 		061377862EE2E000002E9D4C /* TasksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377872EE2E000002E9D4C /* TasksView.swift */; };
 		061377882EE2E000002E9D4C /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377892EE2E000002E9D4C /* NetworkMonitor.swift */; };
 		0613778A2EE2E000002E9D4C /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0613778B2EE2E000002E9D4C /* NotificationManager.swift */; };
+		061377D02EE32000002E9D4C /* SecretStoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 061377D12EE32000002E9D4C /* SecretStoreService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,6 +107,7 @@
 		061377AA2EE30000002E9D4C /* AIChatHomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIChatHomeView.swift; sourceTree = "<group>"; };
 		061377AC2EE30000002E9D4C /* AIChatView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AIChatView.swift; sourceTree = "<group>"; };
 		061377BF2EE31000002E9D4C /* ConsoleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConsoleView.swift; sourceTree = "<group>"; };
+		061377D12EE32000002E9D4C /* SecretStoreService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SecretStoreService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -206,6 +208,7 @@
 			children = (
 				0613774D2EE2C58B002E9D4C /* APIClient.swift */,
 				061377892EE2E000002E9D4C /* NetworkMonitor.swift */,
+				061377D12EE32000002E9D4C /* SecretStoreService.swift */,
 				0613774E2EE2C58B002E9D4C /* SSEClient.swift */,
 			);
 			path = Network;
@@ -583,6 +586,7 @@
 				061377AB2EE30000002E9D4C /* AIChatHomeView.swift in Sources */,
 				061377AD2EE30000002E9D4C /* AIChatView.swift in Sources */,
 				061377C02EE31000002E9D4C /* ConsoleView.swift in Sources */,
+				061377D02EE32000002E9D4C /* SecretStoreService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

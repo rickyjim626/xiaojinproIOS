@@ -172,12 +172,15 @@ struct UsageInfo: Codable {
 class AIRouterService: ObservableObject {
     static let shared = AIRouterService()
 
-    private let baseURL = "https://auth.xiaojinpro.com"
+    private let secretStore = SecretStoreService.shared
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
 
     @Published var availableModels: [AIModel] = AIModel.defaultModels
     @Published var isLoadingModels = false
+
+    /// Cached backend credentials
+    private var backendCredentials: BackendCredentials?
 
     private init() {
         decoder = JSONDecoder()
@@ -188,34 +191,40 @@ class AIRouterService: ObservableObject {
         encoder.keyEncodingStrategy = .convertToSnakeCase
     }
 
+    // MARK: - Backend Credentials
+
+    /// Get backend credentials (fetches from secret store if needed)
+    private func getCredentials() async throws -> BackendCredentials {
+        try await secretStore.getBackendCredentials()
+    }
+
     // MARK: - Models API
 
     func fetchModels() async throws {
         isLoadingModels = true
         defer { isLoadingModels = false }
 
-        guard let token = await AuthManager.shared.accessToken else {
-            throw APIError.unauthorized
-        }
-
-        var request = URLRequest(url: URL(string: "\(baseURL)/v1/models/extended")!)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              200..<300 ~= httpResponse.statusCode else {
-            // Fall back to default models
-            availableModels = AIModel.defaultModels
-            return
-        }
-
         do {
+            let credentials = try await getCredentials()
+
+            var request = URLRequest(url: URL(string: "\(credentials.baseURL)/v1/models/extended")!)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(credentials.apiKey)", forHTTPHeaderField: "Authorization")
+
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  200..<300 ~= httpResponse.statusCode else {
+                // Fall back to default models
+                availableModels = AIModel.defaultModels
+                return
+            }
+
             let modelsResponse = try decoder.decode(ModelsResponse.self, from: data)
             availableModels = modelsResponse.data
         } catch {
-            // Fall back to default models on decode error
+            // Fall back to default models on error
+            print("Failed to fetch models: \(error)")
             availableModels = AIModel.defaultModels
         }
     }
@@ -232,9 +241,7 @@ class AIRouterService: ObservableObject {
         AsyncThrowingStream { continuation in
             Task {
                 do {
-                    guard let token = await AuthManager.shared.accessToken else {
-                        throw APIError.unauthorized
-                    }
+                    let credentials = try await self.getCredentials()
 
                     // Build chat messages
                     var chatMessages: [ChatMessage] = []
@@ -275,12 +282,12 @@ class AIRouterService: ObservableObject {
                         maxTokens: maxTokens
                     )
 
-                    var request = URLRequest(url: URL(string: "\(baseURL)/v1/chat/completions")!)
+                    var request = URLRequest(url: URL(string: "\(credentials.baseURL)/v1/chat/completions")!)
                     request.httpMethod = "POST"
                     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
                     request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
-                    request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                    request.httpBody = try encoder.encode(requestBody)
+                    request.setValue("Bearer \(credentials.apiKey)", forHTTPHeaderField: "Authorization")
+                    request.httpBody = try self.encoder.encode(requestBody)
 
                     let (bytes, response) = try await URLSession.shared.bytes(for: request)
 
@@ -338,9 +345,7 @@ class AIRouterService: ObservableObject {
         temperature: Double? = nil,
         maxTokens: Int? = nil
     ) async throws -> (content: String, usage: UsageInfo?) {
-        guard let token = await AuthManager.shared.accessToken else {
-            throw APIError.unauthorized
-        }
+        let credentials = try await getCredentials()
 
         // Build chat messages
         var chatMessages: [ChatMessage] = []
@@ -361,10 +366,10 @@ class AIRouterService: ObservableObject {
             maxTokens: maxTokens
         )
 
-        var request = URLRequest(url: URL(string: "\(baseURL)/v1/chat/completions")!)
+        var request = URLRequest(url: URL(string: "\(credentials.baseURL)/v1/chat/completions")!)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(credentials.apiKey)", forHTTPHeaderField: "Authorization")
         request.httpBody = try encoder.encode(requestBody)
 
         let (data, response) = try await URLSession.shared.data(for: request)

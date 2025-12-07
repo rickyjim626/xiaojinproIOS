@@ -10,9 +10,9 @@ import AuthenticationServices
 import Combine
 
 // MARK: - User Model
-/// Note: No CodingKeys needed - uses automatic snake_case conversion
+/// Note: Custom decoder handles id as either String or Int from backend
 /// Properties map: avatar_url → avatarUrl, subscription_tier → subscriptionTier, etc.
-struct User: Codable, Identifiable, Equatable {
+struct User: Decodable, Identifiable, Equatable {
     let id: String
     let email: String?
     let name: String?
@@ -20,6 +20,51 @@ struct User: Codable, Identifiable, Equatable {
     let subscriptionTier: String?
     let createdAt: Date?
     let isAdmin: Bool?  // maps from is_admin
+
+    enum CodingKeys: String, CodingKey {
+        case id, email, name
+        case avatarUrl = "avatar_url"
+        case subscriptionTier = "subscription_tier"
+        case createdAt = "created_at"
+        case isAdmin = "is_admin"
+        // Alternative keys from different endpoints
+        case displayName = "display_name"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        // Handle id as either String or Int
+        if let stringId = try? container.decode(String.self, forKey: .id) {
+            id = stringId
+        } else if let intId = try? container.decode(Int.self, forKey: .id) {
+            id = String(intId)
+        } else {
+            throw DecodingError.typeMismatch(String.self, DecodingError.Context(
+                codingPath: [CodingKeys.id],
+                debugDescription: "Expected String or Int for id"
+            ))
+        }
+
+        email = try container.decodeIfPresent(String.self, forKey: .email)
+        // Try both 'name' and 'display_name' keys
+        name = try container.decodeIfPresent(String.self, forKey: .name)
+            ?? container.decodeIfPresent(String.self, forKey: .displayName)
+        avatarUrl = try container.decodeIfPresent(String.self, forKey: .avatarUrl)
+        subscriptionTier = try container.decodeIfPresent(String.self, forKey: .subscriptionTier)
+        createdAt = try container.decodeIfPresent(Date.self, forKey: .createdAt)
+        isAdmin = try container.decodeIfPresent(Bool.self, forKey: .isAdmin)
+    }
+
+    init(id: String, email: String?, name: String?, avatarUrl: String?, subscriptionTier: String?, createdAt: Date?, isAdmin: Bool?) {
+        self.id = id
+        self.email = email
+        self.name = name
+        self.avatarUrl = avatarUrl
+        self.subscriptionTier = subscriptionTier
+        self.createdAt = createdAt
+        self.isAdmin = isAdmin
+    }
 
     var displayName: String {
         name ?? email ?? "User"
@@ -149,7 +194,7 @@ struct RegisterRequest: Codable {
 }
 
 /// Note: No CodingKeys needed - uses automatic snake_case conversion
-struct AuthResponse: Codable {
+struct AuthResponse: Decodable {
     let accessToken: String
     let refreshToken: String?
     let expiresIn: Int?
@@ -305,6 +350,7 @@ class AuthManager: ObservableObject {
         }
 
         clearCredentials()
+        SecretStoreService.shared.clearCache()
         state = .unauthenticated
     }
 
