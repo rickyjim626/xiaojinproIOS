@@ -44,8 +44,14 @@ private struct SecretStoreTokenResponse: Codable {
 // MARK: - Secret Store Secret Response
 
 /// Secret Store 返回的密钥值
+/// 实际响应包含更多字段，但我们只需要 value
 private struct SecretStoreSecretResponse: Codable {
     let value: String
+    // 其他字段是可选的，我们不关心
+    let namespace: String?
+    let key: String?
+    let format: String?
+    let version: Int?
 }
 
 // MARK: - Backend Credentials
