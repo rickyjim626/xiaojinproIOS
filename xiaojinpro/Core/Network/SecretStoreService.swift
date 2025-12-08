@@ -2,50 +2,70 @@
 //  SecretStoreService.swift
 //  xiaojinpro
 //
-//  Created by Claude on 2025/12/6.
+//  Secret Store 客户端
+//  两阶段认证：
+//  1. 用 JWT 从 AuthCenter 获取 Secret Store 的 API Key
+//  2. 用 API Key 直接访问 Secret Store
 //
 
 import Foundation
 
 // MARK: - Secret Store Configuration
-/// Configuration for accessing backend credentials via auth service's secret proxy
+
 enum SecretStoreConfig {
-    // Auth service endpoint that proxies secret-store requests
-    // Uses JWT authentication (no hardcoded secret-store credentials needed)
+    /// AuthCenter 端点
     static let authBaseURL = "https://auth.xiaojinpro.com"
 
-    // Namespace containing backend credentials
-    static let backendNamespace = "frontend-backend"
+    /// 凭证缓存时间 (24小时)
+    static let credentialsCacheDuration: TimeInterval = 86400
 
-    // Keys in the backend namespace
+    /// Backend namespace 中的密钥名称
     static let backendAPIKeyName = "BACKEND_API_KEY"
-    static let backendBaseURLName = "BACKEND_ENDPOINT"  // Note: key is ENDPOINT not BASE_URL
-
-    // Cache duration (1 hour)
-    static let cacheDuration: TimeInterval = 3600
+    static let backendBaseURLName = "BACKEND_ENDPOINT"
 }
 
-// MARK: - Secret Response from Auth Service
-struct SecretResponse: Codable {
-    let key: String
-    let value: String
+// MARK: - Secret Store Token Response
+
+/// 从 AuthCenter 获取的 Secret Store 凭证
+private struct SecretStoreTokenResponse: Codable {
+    let url: String
+    let apiKey: String
     let namespace: String
+    let expiresIn: Int
+
+    enum CodingKeys: String, CodingKey {
+        case url
+        case apiKey = "api_key"
+        case namespace
+        case expiresIn = "expires_in"
+    }
+}
+
+// MARK: - Secret Store Secret Response
+
+/// Secret Store 返回的密钥值
+private struct SecretStoreSecretResponse: Codable {
+    let value: String
 }
 
 // MARK: - Backend Credentials
+
 struct BackendCredentials {
     let apiKey: String
     let baseURL: String
     let fetchedAt: Date
 
     var isExpired: Bool {
-        Date().timeIntervalSince(fetchedAt) > SecretStoreConfig.cacheDuration
+        Date().timeIntervalSince(fetchedAt) > SecretStoreConfig.credentialsCacheDuration
     }
 }
 
 // MARK: - Secret Store Service
-/// Service for fetching backend credentials via auth service's secret proxy
-/// Uses JWT authentication - no hardcoded secret-store credentials
+
+/// Secret Store 服务
+/// 使用两阶段认证访问 Secret Store：
+/// 1. 先用 JWT 调用 /admin/secrets/token 获取 Secret Store 凭证
+/// 2. 然后用 X-API-Key 直接访问 Secret Store
 @MainActor
 class SecretStoreService: ObservableObject {
     static let shared = SecretStoreService()
@@ -53,94 +73,69 @@ class SecretStoreService: ObservableObject {
     @Published private(set) var isLoading = false
     @Published var error: String?
 
-    private var cachedCredentials: BackendCredentials?
-    private let decoder: JSONDecoder
+    // Secret Store 凭证（从 AuthCenter 获取）
+    private var secretStoreURL: String?
+    private var secretStoreAPIKey: String?
+    private var secretStoreNamespace: String?
+    private var credentialsFetchedAt: Date?
 
-    private init() {
-        decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-    }
+    // Backend 凭证缓存
+    private var cachedBackendCredentials: BackendCredentials?
 
-    // MARK: - Public Methods
+    // 防止并发获取凭证
+    private var fetchCredentialsTask: Task<Void, Error>?
 
-    /// Get backend credentials (API key and base URL)
-    /// Returns cached credentials if still valid, otherwise fetches fresh
-    /// Requires user to be logged in (uses JWT from AuthManager)
-    func getBackendCredentials() async throws -> BackendCredentials {
-        // Return cached if still valid
-        if let cached = cachedCredentials, !cached.isExpired {
-            return cached
+    private init() {}
+
+    // MARK: - Credential Management
+
+    /// 确保已获取 Secret Store 凭证
+    private func ensureCredentials() async throws {
+        // 如果凭证有效，直接返回
+        if let fetchedAt = credentialsFetchedAt,
+           Date().timeIntervalSince(fetchedAt) < SecretStoreConfig.credentialsCacheDuration,
+           secretStoreAPIKey != nil {
+            return
         }
 
-        // Fetch fresh credentials
-        isLoading = true
-        error = nil
-        defer { isLoading = false }
-
-        // Get JWT token from AuthManager
-        guard let token = await AuthManager.shared.accessToken else {
-            throw SecretStoreError.notAuthenticated
+        // 如果正在获取凭证，等待完成
+        if let existingTask = fetchCredentialsTask {
+            try await existingTask.value
+            return
         }
+
+        // 创建获取凭证的任务
+        let task = Task<Void, Error> {
+            try await self.fetchCredentials()
+        }
+        fetchCredentialsTask = task
 
         do {
-            async let apiKeyTask = fetchSecret(
-                namespace: SecretStoreConfig.backendNamespace,
-                key: SecretStoreConfig.backendAPIKeyName,
-                token: token
-            )
-            async let baseURLTask = fetchSecret(
-                namespace: SecretStoreConfig.backendNamespace,
-                key: SecretStoreConfig.backendBaseURLName,
-                token: token
-            )
-
-            let (apiKey, baseURL) = try await (apiKeyTask, baseURLTask)
-
-            let credentials = BackendCredentials(
-                apiKey: apiKey,
-                baseURL: baseURL,
-                fetchedAt: Date()
-            )
-
-            cachedCredentials = credentials
-            print("✅ Backend credentials fetched via auth proxy: baseURL=\(baseURL)")
-
-            return credentials
+            try await task.value
+            fetchCredentialsTask = nil
         } catch {
-            self.error = error.localizedDescription
+            fetchCredentialsTask = nil
             throw error
         }
     }
 
-    /// Clear cached credentials (useful for logout or forced refresh)
-    func clearCache() {
-        cachedCredentials = nil
-    }
+    /// 从 AuthCenter 获取 Secret Store 凭证
+    private func fetchCredentials() async throws {
+        let endpoint = "\(SecretStoreConfig.authBaseURL)/admin/secrets/token"
 
-    // MARK: - Private Methods
-
-    /// Fetch a secret via auth service's admin/secrets proxy endpoint
-    /// Uses JWT authentication from the logged-in user
-    private func fetchSecret(namespace: String, key: String, token: String) async throws -> String {
-        // Format: /admin/secrets/namespace%2Fkey (slash must be URL-encoded as single path segment)
-        // Backend route is /admin/secrets/:key and parses namespace/key from the key parameter
-        let combinedKey = "\(namespace)/\(key)"
-
-        // URL-encode including the slash character (urlPathAllowed doesn't encode /)
-        var allowedCharacters = CharacterSet.urlPathAllowed
-        allowedCharacters.remove(charactersIn: "/")
-        let encodedKey = combinedKey.addingPercentEncoding(withAllowedCharacters: allowedCharacters) ?? combinedKey
-
-        let urlString = "\(SecretStoreConfig.authBaseURL)/admin/secrets/\(encodedKey)"
-
-        guard let url = URL(string: urlString) else {
+        guard let url = URL(string: endpoint) else {
             throw SecretStoreError.invalidURL
         }
 
+        // 获取 JWT token
+        guard let accessToken = await AuthManager.shared.accessToken else {
+            throw SecretStoreError.notAuthenticated
+        }
+
         var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.timeoutInterval = 30
 
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -149,38 +144,147 @@ class SecretStoreService: ObservableObject {
             throw SecretStoreError.invalidResponse
         }
 
-        guard 200..<300 ~= httpResponse.statusCode else {
-            let message = String(data: data, encoding: .utf8)
-            if httpResponse.statusCode == 401 {
-                throw SecretStoreError.unauthorized
-            }
-            throw SecretStoreError.httpError(statusCode: httpResponse.statusCode, message: message)
+        // 401/403 时强制登出
+        if httpResponse.statusCode == 401 || httpResponse.statusCode == 403 {
+            await forceLogout()
+            throw SecretStoreError.unauthorized
         }
 
-        // Parse response
-        let secretResponse = try decoder.decode(SecretResponse.self, from: data)
-        return extractValue(from: secretResponse.value)
+        guard 200..<300 ~= httpResponse.statusCode else {
+            let errorMsg = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw SecretStoreError.httpError(statusCode: httpResponse.statusCode, message: errorMsg)
+        }
+
+        let decoder = JSONDecoder()
+        let tokenResponse = try decoder.decode(SecretStoreTokenResponse.self, from: data)
+
+        self.secretStoreURL = tokenResponse.url
+        self.secretStoreAPIKey = tokenResponse.apiKey
+        self.secretStoreNamespace = tokenResponse.namespace
+        self.credentialsFetchedAt = Date()
+
+        print("✅ 已获取 Secret Store 凭证，namespace: \(tokenResponse.namespace)")
     }
 
-    /// Extract the actual value from potentially nested JSON
-    private func extractValue(from value: String) -> String {
-        var current = value.trimmingCharacters(in: .whitespacesAndNewlines)
+    /// 清除凭证（登出时调用）
+    func clearCache() {
+        secretStoreURL = nil
+        secretStoreAPIKey = nil
+        secretStoreNamespace = nil
+        credentialsFetchedAt = nil
+        cachedBackendCredentials = nil
+    }
 
-        // Try to parse as JSON and extract nested value (in case of double-encoded values)
-        for _ in 0..<3 {
-            guard let data = current.data(using: .utf8),
-                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let innerValue = json["value"] as? String else {
-                break
-            }
-            current = innerValue.trimmingCharacters(in: .whitespacesAndNewlines)
+    /// 强制登出（认证失败时调用）
+    private func forceLogout() async {
+        print("⚠️ Secret Store 认证失败，强制登出")
+        await AuthManager.shared.signOut()
+    }
+
+    // MARK: - Public Methods
+
+    /// 获取 backend 凭证 (API key 和 base URL)
+    func getBackendCredentials() async throws -> BackendCredentials {
+        // 返回缓存（如果有效）
+        if let cached = cachedBackendCredentials, !cached.isExpired {
+            return cached
         }
 
-        return current
+        isLoading = true
+        error = nil
+        defer { isLoading = false }
+
+        do {
+            // 确保有 Secret Store 凭证
+            try await ensureCredentials()
+
+            // 并发获取两个密钥
+            async let apiKeyTask = getSecret(SecretStoreConfig.backendAPIKeyName)
+            async let baseURLTask = getSecret(SecretStoreConfig.backendBaseURLName)
+
+            let (apiKey, baseURL) = try await (apiKeyTask, baseURLTask)
+
+            guard let apiKey = apiKey, let baseURL = baseURL else {
+                throw SecretStoreError.missingValue
+            }
+
+            let credentials = BackendCredentials(
+                apiKey: apiKey,
+                baseURL: baseURL,
+                fetchedAt: Date()
+            )
+
+            cachedBackendCredentials = credentials
+            print("✅ Backend credentials fetched: baseURL=\(baseURL)")
+
+            return credentials
+        } catch {
+            self.error = error.localizedDescription
+            throw error
+        }
+    }
+
+    /// 获取单个密钥
+    func getSecret(_ key: String) async throws -> String? {
+        try await ensureCredentials()
+
+        guard let baseURL = secretStoreURL,
+              let apiKey = secretStoreAPIKey,
+              let namespace = secretStoreNamespace else {
+            throw SecretStoreError.notAuthenticated
+        }
+
+        return try await getSecret(key, namespace: namespace, baseURL: baseURL, apiKey: apiKey)
+    }
+
+    /// 获取指定 namespace 的密钥
+    private func getSecret(_ key: String, namespace: String, baseURL: String, apiKey: String) async throws -> String? {
+        // 直接访问 Secret Store: GET /api/v2/secrets/{namespace}/{key}
+        let encodedNamespace = namespace.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? namespace
+        let encodedKey = key.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? key
+        let endpoint = "\(baseURL)/api/v2/secrets/\(encodedNamespace)/\(encodedKey)"
+
+        guard let url = URL(string: endpoint) else {
+            throw SecretStoreError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue(apiKey, forHTTPHeaderField: "X-API-Key")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = 30
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw SecretStoreError.invalidResponse
+        }
+
+        // 404 表示密钥不存在
+        if httpResponse.statusCode == 404 {
+            return nil
+        }
+
+        // 401/403 可能是凭证过期
+        if httpResponse.statusCode == 401 || httpResponse.statusCode == 403 {
+            clearCache()
+            throw SecretStoreError.unauthorized
+        }
+
+        guard 200..<300 ~= httpResponse.statusCode else {
+            let errorMsg = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw SecretStoreError.httpError(statusCode: httpResponse.statusCode, message: errorMsg)
+        }
+
+        let decoder = JSONDecoder()
+        let secretResponse = try decoder.decode(SecretStoreSecretResponse.self, from: data)
+
+        return secretResponse.value
     }
 }
 
 // MARK: - Secret Store Error
+
 enum SecretStoreError: Error, LocalizedError {
     case invalidURL
     case invalidResponse
@@ -192,17 +296,17 @@ enum SecretStoreError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return "Invalid secret store URL"
+            return "Invalid Secret Store URL"
         case .invalidResponse:
-            return "Invalid response from secret store"
+            return "Invalid response from Secret Store"
         case .httpError(let code, let message):
-            return "Secret store error \(code): \(message ?? "Unknown")"
+            return "Secret Store error \(code): \(message ?? "Unknown")"
         case .missingValue:
             return "Secret value not found"
         case .notAuthenticated:
-            return "Please sign in to access backend services"
+            return "请先登录"
         case .unauthorized:
-            return "Session expired - please sign in again"
+            return "会话已过期，请重新登录"
         }
     }
 }
