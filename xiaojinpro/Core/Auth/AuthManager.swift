@@ -537,22 +537,35 @@ class AuthManager: ObservableObject {
 
     // MARK: - Keychain Storage
 
+    private let keychainService = "com.xiaojinpro.auth"
+
     private func saveCredentials(_ credentials: AuthCredentials) {
         guard let data = try? JSONEncoder().encode(credentials) else { return }
 
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: keychainKey,
-            kSecValueData as String: data
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: keychainKey
         ]
 
+        // 先删除旧条目
         SecItemDelete(query as CFDictionary)
-        SecItemAdd(query as CFDictionary, nil)
+
+        // 添加新条目
+        var addQuery = query
+        addQuery[kSecValueData as String] = data
+        addQuery[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+
+        let status = SecItemAdd(addQuery as CFDictionary, nil)
+        if status != errSecSuccess {
+            print("⚠️ Keychain save failed: \(status)")
+        }
     }
 
     private func loadCredentials() -> AuthCredentials? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
             kSecAttrAccount as String: keychainKey,
             kSecReturnData as String: true
         ]
@@ -563,6 +576,9 @@ class AuthManager: ObservableObject {
         guard status == errSecSuccess,
               let data = result as? Data,
               let credentials = try? JSONDecoder().decode(AuthCredentials.self, from: data) else {
+            if status != errSecItemNotFound {
+                print("⚠️ Keychain load failed: \(status)")
+            }
             return nil
         }
 
@@ -572,6 +588,7 @@ class AuthManager: ObservableObject {
     private func clearCredentials() {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
             kSecAttrAccount as String: keychainKey
         ]
 

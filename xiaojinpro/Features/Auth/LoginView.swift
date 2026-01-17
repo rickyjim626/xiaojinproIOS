@@ -32,7 +32,7 @@ struct LoginView: View {
                         .font(.largeTitle)
                         .fontWeight(.bold)
 
-                    Text("宇宙超级终端")
+                    Text("中国自研剪辑软件")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }

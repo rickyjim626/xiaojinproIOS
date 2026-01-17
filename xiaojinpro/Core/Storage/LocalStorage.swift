@@ -19,6 +19,11 @@ enum StorageKey: String {
     case streamingEnabled = "ai.streamingEnabled"
     case maxTokens = "ai.maxTokens"
 
+    // Interpreter settings
+    case interpreterSettings = "interpreter.settings"
+    case interpreterSessions = "interpreter.sessions"
+    case interpreterLastSession = "interpreter.lastSession"
+
     // Cache
     case cachedConversations = "cache.conversations"
     case cachedSkills = "cache.skills"

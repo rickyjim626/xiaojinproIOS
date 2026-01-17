@@ -18,11 +18,11 @@ class AIConversationService: ObservableObject {
 
     private init() {
         decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        // 不使用 .convertFromSnakeCase，因为 Model 已定义 CodingKeys
         decoder.dateDecodingStrategy = .iso8601
 
         encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
+        // 不使用 .convertToSnakeCase，因为 Model 已定义 CodingKeys
         encoder.dateEncodingStrategy = .iso8601
     }
 

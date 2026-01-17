@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import PhotosUI
+import UIKit
 
 // MARK: - Pending Attachment
 struct PendingAttachment: Identifiable {
@@ -217,6 +218,9 @@ class AIChatStore: ObservableObject {
         guard !text.isEmpty || !pendingAttachments.isEmpty else { return }
         guard !isSending else { return }
 
+        // Haptic feedback on send
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+
         isSending = true
         error = nil
 
@@ -418,6 +422,23 @@ class AIChatStore: ObservableObject {
                 // Regenerate
                 await generateResponse(conversationId: conversation.id)
             }
+        }
+    }
+
+    func deleteMessage(_ message: AIMessage) async {
+        guard let conversation = currentConversation else { return }
+
+        do {
+            try await conversationService.deleteMessage(
+                conversationId: conversation.id,
+                messageId: message.id
+            )
+            messages.removeAll { $0.id == message.id }
+
+            // Haptic feedback
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+        } catch {
+            self.error = "Failed to delete message: \(error.localizedDescription)"
         }
     }
 

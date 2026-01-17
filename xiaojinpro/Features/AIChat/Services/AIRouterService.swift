@@ -184,11 +184,11 @@ class AIRouterService: ObservableObject {
 
     private init() {
         decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        // 不使用 .convertFromSnakeCase，因为 Model 已定义 CodingKeys
         decoder.dateDecodingStrategy = .iso8601
 
         encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
+        // 不使用 .convertToSnakeCase，因为 Model 已定义 CodingKeys
     }
 
     // MARK: - Backend Credentials
@@ -299,31 +299,21 @@ class AIRouterService: ObservableObject {
                         throw APIError.httpError(statusCode: httpResponse.statusCode, message: nil)
                     }
 
-                    var buffer = ""
-                    for try await byte in bytes {
-                        buffer.append(Character(UnicodeScalar(byte)))
+                    // Use lines iterator for proper UTF-8 handling
+                    for try await line in bytes.lines {
+                        // Parse data line
+                        if line.hasPrefix("data: ") {
+                            let dataString = String(line.dropFirst(6))
 
-                        // Parse SSE events
-                        while let eventEnd = buffer.range(of: "\n\n") {
-                            let eventString = String(buffer[..<eventEnd.lowerBound])
-                            buffer.removeSubrange(..<eventEnd.upperBound)
+                            if dataString == "[DONE]" {
+                                continuation.finish()
+                                return
+                            }
 
-                            // Parse data line
-                            for line in eventString.components(separatedBy: "\n") {
-                                if line.hasPrefix("data: ") {
-                                    let dataString = String(line.dropFirst(6))
-
-                                    if dataString == "[DONE]" {
-                                        continuation.finish()
-                                        return
-                                    }
-
-                                    if let data = dataString.data(using: .utf8),
-                                       let chunk = try? self.decoder.decode(ChatCompletionChunk.self, from: data),
-                                       let content = chunk.choices?.first?.delta?.content {
-                                        continuation.yield(content)
-                                    }
-                                }
+                            if let data = dataString.data(using: .utf8),
+                               let chunk = try? self.decoder.decode(ChatCompletionChunk.self, from: data),
+                               let content = chunk.choices?.first?.delta?.content {
+                                continuation.yield(content)
                             }
                         }
                     }

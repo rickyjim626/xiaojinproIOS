@@ -69,6 +69,15 @@ struct SettingsView: View {
                     }
                 }
 
+                // Features
+                Section("功能") {
+                    NavigationLink {
+                        InterpreterView()
+                    } label: {
+                        Label("同声传译", systemImage: "waveform.badge.mic")
+                    }
+                }
+
                 // General settings
                 Section("通用") {
                     NavigationLink {
