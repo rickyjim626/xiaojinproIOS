@@ -57,6 +57,7 @@
 		F80AF54A855F6C1A0287F4DC /* AudioWaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC686FFD6CBB3354BA45EF43 /* AudioWaveformView.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* InterpreterSessionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F3 /* InterpreterSessionModels.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F4 /* InterpreterSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F5 /* InterpreterSessionService.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F6 /* InterpreterMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F7 /* InterpreterMetrics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,6 +126,7 @@
 		DDA9F8CE9B81B9D4337BC0BC /* ASRService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASRService.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A7B8C9D0E1F3 /* InterpreterSessionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpreterSessionModels.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A7B8C9D0E1F5 /* InterpreterSessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpreterSessionService.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6A7B8C9D0E1F7 /* InterpreterMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpreterMetrics.swift; sourceTree = "<group>"; };
 		06C104EFA00C5DFDB27535DA /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
 		C99E7A604C38351273D3220E /* InterpreterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpreterStore.swift; sourceTree = "<group>"; };
 		801E3A941C34080035594B4F /* InterpreterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterpreterView.swift; sourceTree = "<group>"; };
@@ -480,6 +482,7 @@
 			isa = PBXGroup;
 			children = (
 				DDA9F8CE9B81B9D4337BC0BC /* ASRService.swift */,
+				A1B2C3D4E5F6A7B8C9D0E1F7 /* InterpreterMetrics.swift */,
 				A1B2C3D4E5F6A7B8C9D0E1F5 /* InterpreterSessionService.swift */,
 				06C104EFA00C5DFDB27535DA /* TranslationService.swift */,
 			);
@@ -679,6 +682,7 @@
 				F80AF54A855F6C1A0287F4DC /* AudioWaveformView.swift in Sources */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* InterpreterSessionModels.swift in Sources */,
 				A1B2C3D4E5F6A7B8C9D0E1F4 /* InterpreterSessionService.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F6 /* InterpreterMetrics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -137,6 +137,13 @@ class InterpreterMetrics: ObservableObject {
         }
     }
 
+    /// Remap segment ID when backend returns a different ID than client-generated
+    func remapSegmentId(from oldId: String, to newId: String) {
+        guard oldId != newId, let segment = segments[oldId] else { return }
+        segments[newId] = segment
+        segments.removeValue(forKey: oldId)
+    }
+
     func sseReceived(
         segmentId: String,
         backendTimings: BackendSegmentTimings?,

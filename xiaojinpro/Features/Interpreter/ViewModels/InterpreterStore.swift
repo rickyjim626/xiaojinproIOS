@@ -258,10 +258,7 @@ class InterpreterStore: ObservableObject {
             pendingSegments[response.segmentId] = localIndex
 
             // Update metrics mapping if segmentId changed
-            if response.segmentId != segmentId {
-                metrics.segments[response.segmentId] = metrics.segments[segmentId]
-                metrics.segments.removeValue(forKey: segmentId)
-            }
+            metrics.remapSegmentId(from: segmentId, to: response.segmentId)
 
             print("[Interpreter] Segment \(response.segmentId) submitted, local index: \(localIndex)")
 
